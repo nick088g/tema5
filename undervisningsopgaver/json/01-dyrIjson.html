@@ -32,7 +32,7 @@
             let dest = document.querySelector("#liste");
 
             async function getJson() {
-                let jsonData = await fetch("dyr.json");
+                let jsonData = await fetch("https://mandalskeawebspace.dk/claude_php/clean_up_spreadsheet.php?id=xxx");
                 alleDyr = await jsonData.json();
                 visDyr();
             }

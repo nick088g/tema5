@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personliste</title>
+    <link rel="stylesheet" href="">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+        .allePersoner {
+            border: 1.2px solid black;
+            margin 5px;
+            padding: 5px;
+
+        }
+
+        #liste {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .billede {
+            width: 200px;
+            display: grid;
+            margin: 2vw auto;
+
+        }
+
+        body {
+            /*            margin: 5vw 15vw;*/
+        }
+
+        h2 {
+            display: grid;
+            text-align: center;
+            font-family: 'EB Garamond', serif;
+        }
+
+        p a {
+            font-family: 'Roboto', sans-serif;
+        }
+
+
+        .menu {
+            display: flex;
+            justify-content: center;
+        }
+
+
+
+        .filter {
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .valgt {
+            background-color: aquamarine;
+        }
+
+        h1 {
+            display: grid;
+            justify-content: center;
+        }
+
+        #popup {
+            width: 100vw;
+            height: 100vw;
+            position: fixed;
+            background-color: red;
+            display: none;
+        }
+
+        #indhold {
+            box-sizing: border-box;
+            background-color: aliceblue;
+            width: 90vw;
+            height: 90vw;
+            margin: auto;
+        }
+
+        #luk {
+            box-sizing: border-box;
+            text-align: right;
+            padding-right: 1em;
+        }
+
+        #luk button {
+            font-size: 2em;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="popup">
+        <div id="luk"><button>X</button></div>
+        <div id="indhold"></div>
+    </div>
+    <header>
+        <h1>Alle</h1>
+
+        <nav class="menu">
+            <button class="filter valgt" data-hold="alle">Alle</button>
+            <button class="filter" data-hold="a">Hold A</button>
+            <button class="filter" data-hold="b">Hold B</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="liste">
+        </section>
+    </main>
+
+    <footer></footer>
+    <script>
+        let allePersoner = [];
+        let filter = "alle";
+
+        document.addEventListener("DOMContentLoaded", start);
+
+
+        function start() {
+            let dest = document.querySelector("#liste");
+            let temp = document.querySelector("template");
+
+            async function getJson() {
+                let jsonData = await fetch("https://mandalskeawebspace.dk/claude_php/clean_up_spreadsheet.php?id=1OLlD_GRoz71piHvnW306omRAyHS7vtLOILQt-K0YF_c");
+                allePersoner = await jsonData.json();
+                allePersoner.sort((a, b) => {
+                    return b.navn.localeCompare(a.navn);
+                })
+                visPersoner();
+            }
+
+            function visPersoner() {
+                dest.innerHTML = "";
+                allePersoner.forEach((personer) => {
+                    if (filter == "alle" || filter == personer.hold) {
+                        let template = `
+                        <article class="allePersoner">
+                                <h2>${personer.navn}</h2>
+                                <img class="billede" src="${personer.billede}" alt="${personer.navn}">
+                                <p>Alder: ${personer.alder}</p>
+                        </article>
+                    `;
+                        dest.insertAdjacentHTML("beforeend", template);
+                        dest.lastElementChild.addEventListener("click", åbn);
+
+                        function åbn() {
+                            document.querySelector("#indhold").innerHTML = `
+                            <article class="allePersoner">
+                                    <h2>${personer.navn}</h2>
+                                <img class="billede" src="${personer.billede}" alt="${personer.navn}">
+                                <p>hold: ${personer.hold}, Alder: ${personer.alder}</p>
+                                <h3>${personer.navn}'s historie</h3>
+                                <p>${personer.historie}</p>
+                            </article>
+                                    `;
+                            document.querySelector("#popup").style.display = "block";
+                        }
+                    }
+                });
+            }
+            document.querySelectorAll(".filter").forEach(elm => {
+                elm.addEventListener("click", filtrering);
+            })
+
+            function filtrering() {
+                filter = this.getAttribute("data-hold");
+                document.querySelector("h1").textContent = this.textContent;
+                document.querySelectorAll(".filter").forEach(elm => {
+                    elm.classList.remove("valgt");
+                })
+                this.classList.add("valgt");
+                visPersoner();
+            }
+            getJson()
+        }
+
+    </script>
+</body>
+
+</html>'

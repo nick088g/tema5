@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personliste</title>
+    <link rel="stylesheet" href="">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+        html,
+        body,
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #singleview {
+            width: 100vw;
+            height: 100vw;
+            background-color: red;
+        }
+
+        #indhold {
+            box-sizing: border-box;
+            background-color: aliceblue;
+            width: 90vw;
+            height: 90vw;
+            margin: auto;
+        }
+
+        #tilbage {
+            box-sizing: border-box;
+            text-align: right;
+            padding-right: 1em;
+        }
+
+        #tilbage button {
+            font-size: 2em;
+        }
+
+        .billede {
+            width: 400px;
+            display: grid;
+            margin: 2vw auto;
+
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="singleview">
+        <div id="tilbage"><button>X</button></div>
+        <div id="indhold"></div>
+    </div>
+    <script>
+        let urlParams = new URLSearchParams(window.location.search);
+        let github = urlParams.get("github");
+        let allePersoner;
+        let personer;
+        document.addEventListener("DOMContentLoaded", start);
+
+        function start() {
+
+            async function getJson() {
+                let jsonData = await fetch("https://mandalskeawebspace.dk/claude_php/clean_up_spreadsheet.php?id=1OLlD_GRoz71piHvnW306omRAyHS7vtLOILQt-K0YF_c");
+                allePersoner = await jsonData.json();
+                allePersoner.forEach(obj => {
+                    if (obj.github == github) {
+                        personer = obj;
+                    }
+                })
+
+                åbn();
+            }
+
+            function åbn() {
+                document.querySelector("#indhold").innerHTML = `
+                <article class="personer">
+                    <h2>${personer.navn}</h2>
+                    <img class="billede" src="${personer.billede}" alt="${personer.navn}">
+                    <p>hold: ${personer.hold}, Alder: ${personer.alder}</p>
+                    <h3>${personer.navn}'s historie</h3>
+                    <p>${personer.historie}</p>
+                </article>
+                `;
+            }
+            document.querySelector("#tilbage button").addEventListener("click", () => {
+                location.href = "05-kald.html"
+            })
+
+            getJson()
+        }
+
+    </script>
+</body>
+
+</html>'

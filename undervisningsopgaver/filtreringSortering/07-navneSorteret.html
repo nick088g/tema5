@@ -89,7 +89,7 @@
                 let jsonData = await fetch("https://mandalskeawebspace.dk/claude_php/clean_up_spreadsheet.php?id=1OLlD_GRoz71piHvnW306omRAyHS7vtLOILQt-K0YF_c");
                 allePersoner = await jsonData.json();
                 allePersoner.sort((a, b) => {
-                    return b.alder - a.alder
+                    return b.navn.localeCompare(a.navn);
                 })
                 visPersoner();
             }

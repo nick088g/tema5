@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bistro Babushka</title>
+    <link rel="stylesheet" href="">
+    <meta name="robots" content="noindex">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+        .allePersoner {
+            border: 1.2px solid black;
+            margin 5px;
+            padding: 5px;
+
+        }
+
+        #liste {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .billede {
+            width: 200px;
+            display: grid;
+            margin: 2vw auto;
+        }
+
+        .storbillede {
+            width: 450px;
+            display: grid;
+            margin: 2vw auto;
+        }
+
+        .splash img {
+            width: 100vw;
+        }
+
+        html,
+        body,
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            display: grid;
+            text-align: center;
+            font-family: 'EB Garamond', serif;
+            font-size: 3.2rem;
+            margin-top: 2vw;
+        }
+
+        p a {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        p {
+            font-size: 1.2rem;
+            display: grid;
+            justify-content: center;
+            margin: 4vw;
+        }
+
+        .filter {
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .valgt {
+            background-color: aquamarine;
+        }
+
+        h1 {
+            display: grid;
+            justify-content: center;
+        }
+
+        #singleview {
+            width: 100vw;
+            height: 60vw;
+            margin-top: 2vw;
+        }
+
+        #indhold {
+            box-sizing: border-box;
+            background-color: rgb(247, 255, 252);
+            width: 89.4vw;
+            height: auto;
+            margin: auto;
+        }
+
+        #tilbage {
+            padding: 0 4vw;
+            cursor: pointer;
+            position: absolute;
+            right: 1.4vw;
+
+        }
+
+        #tilbage button {
+            font-size: 4em;
+        }
+
+        #tilbage :hover {
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="splash">
+        <img src="bistro.png" alt="stjerne"></div>
+    <div id="singleview">
+        <div id="tilbage"><button>X</button></div>
+        <div id="indhold"></div>
+    </div>
+
+    <footer></footer>
+    <script>
+        let urlParams = new URLSearchParams(window.location.search);
+        let id = urlParams.get("id");
+        let allePersoner;
+        let personer;
+        document.addEventListener("DOMContentLoaded", start);
+
+        function start() {
+
+            async function getJson() {
+                let jsonData = await fetch("https://mandalskeawebspace.dk/claude_php/clean_up_spreadsheet.php?id=1jxxxFoWBuMJ1qhQ9BQIAyKHmP38XtAF9_sQr0xo5JLo");
+                allePersoner = await jsonData.json();
+                allePersoner.forEach(obj => {
+                    if (obj.id == id) {
+                        personer = obj;
+                    }
+                })
+
+                åbn();
+            }
+
+            function åbn() {
+                document.querySelector("#indhold").innerHTML = `
+                <article class="allePersoner">
+                        <h2>${personer.navn}</h2>
+                        <p>${personer.kategori}</p>
+                        <img class="storbillede" src="imgs/large/${personer.billede}.jpg" alt="${personer.navn}">
+                        <p>${personer.lang}</p>
+                        <p>Oprindelse: ${personer.oprindelse}</p>
+                        <p>Pris: ${personer.pris}</p>
+                </article>
+                                    `;
+            }
+            document.querySelector("#tilbage button").addEventListener("click", () => {
+                location.href = "kald.html"
+            })
+
+            getJson()
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bistro Babushka</title>
+    <link rel="stylesheet" href="">
+    <meta name="robots" content="noindex">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+        main {
+            margin: 4vw;
+        }
+
+        .allePersoner {
+            border: 1.8px solid #c3c3c3;
+            margin 5px;
+            padding: 5px;
+            background-color: rgba(127, 255, 212, 0.08);
+
+        }
+
+        #liste {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 22px;
+            border-radius: 2px;
+        }
+
+        .billede {
+            width: 300px;
+            display: grid;
+            margin: 2vw auto;
+        }
+
+        .storbillede {
+            width: 525px;
+            display: grid;
+            margin: 2vw auto;
+            border: 2px #c3c3c3 solid;
+        }
+
+        .splash img {
+            width: 100vw;
+        }
+
+        html,
+        body,
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            display: grid;
+            text-align: center;
+            font-family: 'EB Garamond', serif;
+            margin: 1vw;
+        }
+
+        #indhold h2 {
+            font-size: 3rem;
+        }
+
+        p a {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        p {
+            font-size: 1.2rem;
+            display: grid;
+            justify-content: center;
+            margin: 1.5vw;
+        }
+
+        #indhold p {
+            padding: 0 20vw;
+        }
+
+
+        .menu {
+            display: flex;
+            justify-content: center;
+        }
+
+        .filter {
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .valgt {
+            background-color: rgba(127, 255, 212, 0.08);
+        }
+
+        h1 {
+            display: grid;
+            justify-content: center;
+            margin: 2vw;
+            font-size: 2.4rem;
+        }
+
+        #popup {
+            width: 100vw;
+            height: 100vw;
+            position: fixed;
+            display: none;
+            margin: 4vw 0 4vw;
+        }
+
+        #indhold {
+            box-sizing: border-box;
+            background-color: rgb(247, 255, 252);
+            width: 89.4vw;
+            height: auto;
+            margin: auto;
+        }
+
+        #luk {
+            padding: 0 4vw;
+            cursor: pointer;
+            position: fixed;
+            right: 1.4vw;
+
+        }
+
+        #luk button {
+            font-size: 4em;
+        }
+
+        #luk :hover {
+            cursor: pointer;
+        }
+
+        footer {
+            display: block;
+            background-color: rgba(127, 255, 212, 0.08);
+            padding: 1vw;
+            column-count: 2;
+        }
+
+        footer p {
+            justify-content: left;
+            font-size: 1rem;
+            margin-left: 6vw;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="popup">
+        <div id="luk"><button>X</button></div>
+        <div id="indhold"></div>
+    </div>
+    <header>
+        <div class="splash">
+            <img src="bistro.png" alt="stjerne"></div>
+        <h1>Menukortet</h1>
+
+        <nav class="menu">
+            <button class="filter valgt" data-kategori="alle">Menukortet</button>
+            <button class="filter" data-kategori="forretter">Forretter</button>
+            <button class="filter" data-kategori="hovedretter">Hovedretter</button>
+            <button class="filter" data-kategori="desserter">Desserter</button>
+            <button class="filter" data-kategori="drikkevarer">Drikkevarer</button>
+            <button class="filter" data-kategori="sideorders">Sideorders</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="liste">
+        </section>
+    </main>
+
+    <footer>
+        <p>Adresse:<br> Grønnegade 97, 1234 København K</p>
+        <p>Åbningstider: Mandag - Fredag 20:30 - 22:00. <br>Lørdag 12:00 - 23:00</p>
+    </footer>
+    <script>
+        let allePersoner = [];
+        let filter = "alle";
+
+        document.addEventListener("DOMContentLoaded", start);
+
+
+        function start() {
+            let dest = document.querySelector("#liste");
+            let temp = document.querySelector("template");
+
+            async function getJson() {
+                let jsonData = await fetch("https://mandalskeawebspace.dk/claude_php/clean_up_spreadsheet.php?id=1jxxxFoWBuMJ1qhQ9BQIAyKHmP38XtAF9_sQr0xo5JLo");
+                allePersoner = await jsonData.json();
+                allePersoner.sort((a, b) => {
+                    return a.id - b.id
+                });
+                visPersoner();
+            }
+
+            function visPersoner() {
+                dest.innerHTML = "";
+                allePersoner.forEach((personer) => {
+                    if (filter == "alle" || filter == personer.kategori) {
+                        let template = `
+                        <article class="allePersoner">
+                                <h2>${personer.navn}</h2>
+                                <img class="billede" src="imgs/small/${personer.billede}-sm.jpg" alt="${personer.navn}">
+                                <p>${personer.kort}</p>
+                                <p>Pris: ${personer.pris}</p>
+                        </article>
+                    `;
+                        dest.insertAdjacentHTML("beforeend", template);
+                        dest.lastElementChild.addEventListener("click", åbn);
+
+                        function åbn() {
+                            document.querySelector("#indhold").innerHTML = `
+                            <article class="allePersoner">
+                                <h2>${personer.navn}</h2>
+                                <p>${personer.kategori}</p>
+                                <img class="storbillede" src="imgs/large/${personer.billede}.jpg" alt="${personer.navn}">
+                                <p>${personer.lang}</p>
+                                <p>Oprindelse: ${personer.oprindelse}</p>
+                                <p>Pris: ${personer.pris}</p>
+                            </article>
+                                    `;
+                            document.querySelector("#popup").style.display = "block";
+                        }
+                    }
+                });
+            }
+            document.querySelector("#luk button").addEventListener("click", () => {
+                document.querySelector("#popup").style.display = "none";
+            })
+
+            document.querySelectorAll(".filter").forEach(elm => {
+                elm.addEventListener("click", filtrering);
+            })
+
+            function filtrering() {
+                filter = this.getAttribute("data-kategori");
+                document.querySelector("h1").textContent = this.textContent;
+                document.querySelectorAll(".filter").forEach(elm => {
+                    elm.classList.remove("valgt");
+                })
+                this.classList.add("valgt");
+                visPersoner();
+            }
+            getJson()
+        }
+    </script>
+</body>
+
+</html>

@@ -108,6 +108,31 @@
             cursor: pointer;
         }
 
+        @media only screen and (max-width:725px) {
+            #liste {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-gap: 22px;
+                border-radius: 2px;
+            }
+
+            .storbillede {
+                width: 300px;
+                display: grid;
+                margin: 2vw auto;
+                border: 2px #c3c3c3 solid;
+            }
+
+            #indhold {
+                box-sizing: border-box;
+                background-color: rgb(247, 255, 252);
+                width: 100vw;
+                height: auto;
+                margin: auto;
+            }
+
+        }
+
     </style>
 </head>
 
